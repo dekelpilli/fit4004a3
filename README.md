@@ -16,7 +16,7 @@ If a unit being tested has more than one input, the following tests should be co
 * No boundary values  
 * All valid boundary values  
 * All invalid boundary values  
-* A test for each input&rsquo;s boundary value in isolation (i.e. no other inputs have boundary values at the same time)  
+* A test for each input&rsquo;s boundary values in isolation (i.e. no other inputs have boundary values at the same time)  
 
 Hence, for a unit with two inputs, there should be 7 tests run (the first three dot points, then 2 for each input: one for valid boundary and one for invalid).
 
