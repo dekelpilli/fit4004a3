@@ -19,13 +19,59 @@ def tweetAnalyser(tweets):
     #do analysis stuff
     pass
 
-def tweetCollector(tZone, sDate, eDate, uHandle):
-    #TODO: read privacy codes from file
-    #TODO: read tweets from specified user, within specified dates and save as Tweet objects
-    #TODO: adjust time of all tweet objects by tZone
-    #return tweets
 
-    pass
+def getCode(line):
+    return line.split("=")[1].strip()
+
+def apiCreator(filename):
+    #read privacy codes from file
+    codes = open("codes.txt", "r").readlines()
+
+    for line in codes:
+        if line.index("consumer_key=") == 0:
+            consumerKey = line.getCode()
+        elif line.index("consumer_secret=") == 0:
+            consumerSecret = line.getCode()
+        elif line.index("access_token=") == 0:
+            accessToken = line.getCode()
+        elif line.index("access_secret=") == 0:
+            accessSecret = line.getCode()
+
+    #set up API
+    auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
+    auth.set_access_token(accessToken, accessSecret)
+    api = tweepy.API(auth)
+
+    return api
+
+
+
+## sDate and eDate are datetime objects, already adjusted
+def tweetCollector(tZone, sDate, eDate, uHandle):
+    api = apiCreator()
+
+    collectedTweets = [] #stores Tweet objects
+    pageNum = 0
+
+    #read tweets from specified user, within specified dates and save as Tweet objects
+    while True:
+        tweets = api.user_timeline(uHandle, page = pageNum)
+        #tweets contains 20 tweets. Every time pageNum increases, it moves on to the next 20.
+        for tweet in tweets:
+            tweetTime = tweet.created_at
+            if tweetTime >= sDate and tweetTime <= eDate:
+                #able to get username from tweet using api.get_user(tweet.user.id).screen_name
+                tweetObj = Tweet(uHandle, tweet.text, tweetTime.date(), time.time())
+            elif tweetTime < sDate:
+                continue
+            elif tweetTime > eDate:
+                #TODO: adjust time of all tweet objects by tZone
+                
+                return collectedTweets #return tweets
+        pageNum += 1
+
+    #should never get here
+    return collectedTweets
 
 # TODO: move this into another file because it's bloody huge
 class ArgumentHandler:
@@ -119,12 +165,16 @@ if __name__ == "__main__":
     print(str(sys.argv));
 
     #world's best error handling:
-    assert '-t' in sys.argv
+    #assert '-t' in sys.argv
     assert '-a' in sys.argv
     assert '-b' in sys.argv
     assert '-i' in sys.argv
 
-    timeZoneBase = sys.argv[sys.argv.index('-t')+1]
+    if '-t' in sys.argv:
+        timeZoneBase = sys.argv[sys.argv.index('-t')+1]
+    else:
+        timeZoneBase = "00:00"
+
     startDateBase = sys.argv[sys.argv.index('-a')+1] #TODO: check that this is less than current date+tZone
     endDateBase = sys.argv[sys.argv.index('-b')+1]
     userHandle = sys.argv[sys.argv.index('-i')+1]
