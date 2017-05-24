@@ -111,7 +111,113 @@ class ArgumentHandlerTests(unittest.TestCase):
         test = ArgumentHandler(None, None, None, None)
         self.assertTrue(test.checkUserHandleFormat("@test"))
 
-    # Tests for formatArguments TODO
+    # Tests for formatArguments
+    def test_formatArguments_noBoundaries(self):
+        test = ArgumentHandler("+10:00", "2016-05-23", "2017-05-23", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(isinstance(tZone, datetime.timedelta) and isinstance(sDate, datetime.date) and isinstance(eDate, datetime.date))
+
+    def test_formatArguments_allValidBoundaries(self):
+        test = ArgumentHandler("-00:00", "0001-01-01", "0001-01-01", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(isinstance(tZone, datetime.timedelta) and isinstance(sDate, datetime.date) and isinstance(eDate, datetime.date))
+
+    def test_formatArguments_allInvalidBoundaries(self):
+        test = ArgumentHandler("+00", "01-01-0001", "01-01-0001", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertFalse(isinstance(tZone, datetime.timedelta) or isinstance(sDate, datetime.date) or isinstance(eDate, datetime.date))
+
+    def test_formatArguments_tZoneStrValid(self):
+        test = ArgumentHandler("-00:00", "2016-05-23", "2017-05-23", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(isinstance(tZone, datetime.timedelta) and isinstance(sDate, datetime.date) and isinstance(eDate, datetime.date))
+
+    def test_formatArguments_tZoneStrInvalid(self):
+        test = ArgumentHandler("+00", "2016-05-23", "2017-05-23", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue((not isinstance(tZone, datetime.timedelta)) and isinstance(sDate, datetime.date) and isinstance(eDate, datetime.date))
+
+    def test_formatArguments_sDateStrValid(self):
+        test = ArgumentHandler("+10:00", "0001-01-01", "2017-05-23", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(isinstance(tZone, datetime.timedelta) and isinstance(sDate, datetime.date) and isinstance(eDate, datetime.date))
+
+    def test_formatArguments_sDateStrInvalid(self):
+        test = ArgumentHandler("+10:00", "01-01-0001", "2017-05-23", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(isinstance(tZone, datetime.timedelta) and (not isinstance(sDate, datetime.date)) and isinstance(eDate, datetime.date))
+
+    def test_formatArguments_eDateStrValid(self):
+        test = ArgumentHandler("+10:00", "2016-05-23", "0001-01-01", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(isinstance(tZone, datetime.timedelta) and isinstance(sDate, datetime.date) and isinstance(eDate, datetime.date))
+
+    def test_formatArguments_eDateStrInvalid(self):
+        test = ArgumentHandler("+10:00", "2016-05-23", "01-01-0001", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(isinstance(tZone, datetime.timedelta) and isinstance(sDate, datetime.date) and not isinstance(eDate, datetime.date))
+
+    def test_formatArguments_tZoneValues(self):
+        test = ArgumentHandler("+10:00", "2016-05-23", "2017-05-23", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(tZone.seconds == 36000)
+
+    def test_formatArguments_sDateValues(self):
+        test = ArgumentHandler("+10:00", "2016-05-23", "2017-05-23", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(sDate.year == 2016 and sDate.month == 5 and sDate.day == 23)
+
+    def test_formatArguments_eDateValues(self):
+        test = ArgumentHandler("+10:00", "2016-05-23", "2017-05-23", None)
+        tZone, sDate, eDate = test.formatArguments()
+        self.assertTrue(eDate.year == 2017 and sDate.month == 5 and sDate.day == 23)
+
+    # tests for formatTimeZone
+    def test_formatTimeZone_validBoundary(self):
+        test = ArgumentHandler(None, None, None, None)
+        self.assertIsInstance(test.formatTimeZone("-00:00"), datetime.timedelta)
+        
+    def test_formatTimeZone_invalidBoundary(self):
+        test = ArgumentHandler(None, None, None, None)
+        with self.assertRaises(IndexError):
+            test.formatTimeZone("+00")
+        
+    def test_formatTimeZone_regular(self):
+        test = ArgumentHandler(None, None, None, None)
+        self.assertIsInstance(test.formatTimeZone("+10:00"), datetime.timedelta)
+
+    def test_formatTimeZone_regularValue(self):
+        test = ArgumentHandler(None, None, None, None)
+        result = test.formatTimeZone("+10:00")
+        self.assertEqual(result.seconds, 36000)
+
+    def test_formatTimeZone_validBoundaryValue(self):
+        test = ArgumentHandler(None, None, None, None)
+        result = test.formatTimeZone("-01:01")
+        self.assertEqual(result.total_seconds(), -3660)
+
+    # tests for formatDate
+    def test_formatDate_validBoundary(self):
+        test = ArgumentHandler(None, None, None, None)
+        self.assertIsInstance(test.formatDate("0001-01-01"), datetime.date)
+        
+    def test_formatDate_invalidBoundary(self):
+        test = ArgumentHandler(None, None, None, None)
+        self.assertEqual(test.formatDate("01-01-0001"), -1)
+        
+    def test_formatDate_regular(self):
+        test = ArgumentHandler(None, None, None, None)
+        self.assertIsInstance(test.formatDate("2017-05-24"), datetime.date)
+
+    def test_formatDate_regularValue(self):
+        test = ArgumentHandler(None, None, None, None)
+        result = test.formatDate("2017-05-24")
+        self.assertTrue(result.year == 2017 and result.month == 5 and result.day == 24)
+
+    def test_formatDate_validBoundaryValue(self):
+        test = ArgumentHandler(None, None, None, None)
+        result = test.formatDate("0001-01-01")
+        self.assertTrue(result.year == 1 and result.month == 1 and result.day == 1)
 
 if __name__ == "__main__":
     unittest.main()

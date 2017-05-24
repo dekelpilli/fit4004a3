@@ -76,31 +76,44 @@ class ArgumentHandler:
     # assumes that strings are in correct format
     def formatArguments(self):
         # turn timezone string into timedelta obj
-        tZone = formatTimeZone(self.tZoneStr)
+        tZone = None
+        try:
+            tZone = self.formatTimeZone(self.tZoneStr)
+        except IndexError:
+            tZone = -1
 
         #turn start and end date strings into date obj
-        sDate = formatDate(self.sDateStr)
-        eDate = formatDate(self.eDateStr)
+        try:
+            sDate = self.formatDate(self.sDateStr)
+        except IndexError:
+            sDate = -1
+
+        try:
+            eDate = self.formatDate(self.eDateStr)
+        except IndexError:
+            eDate = -1
 
         return tZone, sDate, eDate
 
     def formatTimeZone(self, tZoneStr):
         sign = tZoneStr[0]
         time = tZoneStr[1:]
-        time = tZoneStr.split(":")
+        time = time.split(":")
         tHours = int(time[0])
         tMinutes = int(time[1])
         if sign == "-":
             tHours = 0-tHours
             tMinutes = 0-tMinutes
-        return timedate.timedelta(hours=tHours, minutes=tMinutes)
+        return datetime.timedelta(hours=tHours, minutes=tMinutes)
 
     def formatDate(self, dateStr):
         date = dateStr.split("-")
+        if len(date[0]) < 4:
+            return -1
         year = int(date[0])
         month = int(date[1])
         day = int(date[2])
-        return timedate.date(year, month, day)
+        return datetime.date(year, month, day)
 
 if __name__ == "__main__":
     print(str(sys.argv));
