@@ -1,6 +1,29 @@
 # FlowUnderStacks - Assignment 3
 
-## Selection Strategy
+## Getting started  
+To run this program, you need to have Tweepy and Python 3.5.2 installed. If you do not, follow the instructions [here](https://github.com/tweepy/tweepy/blob/master/README.md) and [here](https://wiki.python.org/moin/BeginnersGuide/Download) to do so.
+
+To start the program, open the terminal in the folder that contains main.py and enter the following command:
+
+### For Linux:
+python main.py -t [timezone] -a [startDate] -b [endDate] -i [userId]
+
+### For Windows:
+main.py -t [timezone] -a [startDate] -b [endDate] -i [userId]
+
+#### timezone
+Formatted as +/-HH:MM. This is the amount of time to add to any given tweet's time when recorded in the user's time zone.   
+*Example:* -05:30
+
+#### startDate & endDate 
+Formatted as YYYY-MM-DD. When to start and end the tweet analysis.   
+*Example:* 2017-05-20
+
+#### userId
+Formatted as @userIdHere. The handle of the user whose tweets you want analysed.  
+*Example:* @rgmerk
+
+## Test Selection Strategy
 The selection of test cases will involve multiple selection strategies. These strategies will be defined in a specific order of execution when generating test cases, with the intention of earlier strategies being more specific and generating tests for the most common and useful functionality, and later ones being useful for generating tests for edge cases that the previous strategies may miss.
 
 ### Strategies 
@@ -9,9 +32,9 @@ The selection of test cases will involve multiple selection strategies. These st
 Our black box testing will include these strategies, in the following order: 
 ##### Boundary Value analysis on unit inputs 
 For each input for the tested unit, two boundary values and one non-boundary value will be tested. Based on the purpose/specifications of the unit, this will include one valid boundary value, one invalid, and one non-boundary value.  
-<br/>
+  
 For example, an input that corresponds to the user&rsquo;s age could have the values 0, -1, and 30.  
-<br/>
+   
 If a unit being tested has more than one input, the following tests should be conducted:  
 * No boundary values  
 * All valid boundary values  
