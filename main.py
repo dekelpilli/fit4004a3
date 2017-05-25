@@ -22,7 +22,7 @@ class Tweet:
         self.time = date.time()
         self.date = date.date()
 
-def tweetAnalyser(tweets):
+def plotTweets(tweets):
     #do analysis stuff
     pass
 
@@ -30,7 +30,7 @@ def tweetAnalyser(tweets):
 def getCode(line):
     return line.split("=")[1].strip()
 
-def apiCreator(codeFile):
+def createAPI(codeFile):
     #read privacy codes from file
     #codes = open(filename, "r").readlines()
     codes = codeFile.readlines()
@@ -62,8 +62,8 @@ def apiCreator(codeFile):
 # tZone is timedelta
 # sDate and eDate are datetime objects
 # uHandle is string, starting with @
-def tweetCollector(tZone, sDate, eDate, uHandle, codeFile):
-    api = apiCreator(codeFile)
+def collectTweets(tZone, sDate, eDate, uHandle, codeFile):
+    api = createAPI(codeFile)
 
     collectedTweets = [] #stores Tweet objects
     pageNum = 1
@@ -221,6 +221,6 @@ if __name__ == "__main__":
     # format args into better objs
     timeZone, startDate, endDate = argHandler.formatArguments()
 
-    tweets = tweetCollector(timeZone, startDate, endDate, userHandle,open("codes.txt", "r"))
+    tweets = collectTweets(timeZone, startDate, endDate, userHandle,open("codes.txt", "r"))
     for tweet in tweets:
         print(tweet.text)
