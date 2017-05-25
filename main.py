@@ -126,7 +126,32 @@ class ArgumentHandler:
         validUser = self.checkUserHandleFormat(self.uHandleStr)
         return validTz and validDates and validUser
 
-    
+    def checkTimeZoneFormat(self, tZone):
+        try:
+            assert len(tZone) == 6
+            assert tZone[0] in ["+", "-"]
+            assert tZone[3] == ":"
+            assert self.isInt(tZone[1]) and self.isInt(tZone[2]) and self.isInt(tZone[4]) and self.isInt(tZone[5])
+        except AssertionError:
+            return False
+        return True
+
+    def checkDateFormat(self, date):
+        try:
+            assert len(date) == 10
+            assert date[4] == "-" and date[7] == "-"
+            assert self.isInt(date[0]) and self.isInt(date[1]) and self.isInt(date[2]) and self.isInt(date[3]) and self.isInt(date[5]) and self.isInt(date[6]) and self.isInt(date[8]) and self.isInt(date[9])
+        except AssertionError:
+            return False
+        return True
+
+    def checkUserHandleFormat(self, uHandle):
+        try:
+            assert len(uHandle) > 1
+            assert uHandle[0] == "@"
+        except AssertionError:
+            return False
+        return True
 
     # takes strings from command line args and formats them into more useful objects
     # assumes that strings are in correct format
