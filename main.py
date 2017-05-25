@@ -116,32 +116,17 @@ class ArgumentHandler:
 
     # checks that all args are in correct format
     def checkArgumentFormats(self):
-        self.checkTimeZoneFormat(self.tZoneStr)
+        validTz = self.checkTimeZoneFormat(self.tZoneStr)
 
+        validDates = True
         dates = [self.sDateStr, self.eDateStr]
         for date in dates:
-            self.checkDateFormat(date)
+            validDates = validDates and validself.checkDateFormat(date)
 
-        self.checkUserHandleFormat(self.uHandleStr)
-        return True
+        validUser = self.checkUserHandleFormat(self.uHandleStr)
+        return validTz and validDates and validUser
 
-    def checkTimeZoneFormat(self, tZone):
-        assert len(tZone) == 6
-        assert tZone[0] in ["+", "-"]
-        assert tZone[3] == ":"
-        assert self.isInt(tZone[1]) and self.isInt(tZone[2]) and self.isInt(tZone[4]) and self.isInt(tZone[5])
-        return True
-
-    def checkDateFormat(self, date):
-        assert len(date) == 10
-        assert date[4] == "-" and date[7] == "-"
-        assert self.isInt(date[0]) and self.isInt(date[1]) and self.isInt(date[2]) and self.isInt(date[3]) and self.isInt(date[5]) and self.isInt(date[6]) and self.isInt(date[8]) and self.isInt(date[9])
-        return True
-
-    def checkUserHandleFormat(self, uHandle):
-        assert len(uHandle) > 1
-        assert uHandle[0] == "@"
-        return True
+    
 
     # takes strings from command line args and formats them into more useful objects
     # assumes that strings are in correct format
@@ -211,11 +196,14 @@ if __name__ == "__main__":
 
     argHandler = ArgumentHandler(timeZoneBase, startDateBase, endDateBase, userHandle)
     # assert format of command line args
-    try:
-        argHandler.checkArgumentFormats()
-    except AssertionError:
-        # TODO: add messages to each assertion
-        sys.exit("At least one argument was in the incorrect format")
+##    try:
+##        argHandler.checkArgumentFormats()
+##    except AssertionError:
+##        # TODO: add messages to each assertion
+##        sys.exit("At least one argument was in the incorrect format")
+    
+    if not argHandler.checkArgumentFormats():
+        raise ValueError
 
     # format args into better objs
     timeZone, startDate, endDate = argHandler.formatArguments()
