@@ -33,8 +33,7 @@ class ArgumentHandlerTests(unittest.TestCase):
 
     def test_checkArgumentFormats_allInvalidBoundaries(self):
         test = ArgumentHandler("+00", "00-00-0000", "00-00-0000", "@")
-        with self.assertRaises(AssertionError):
-            test.checkArgumentFormats()
+        self.assertFalse(test.checkArgumentFormats())
 
     def test_checkArgumentFormats_tZoneStrValid(self):
         test = ArgumentHandler("-00:00", "2016-05-23", "2017-05-23", "@test")
@@ -42,8 +41,7 @@ class ArgumentHandlerTests(unittest.TestCase):
 
     def test_checkArgumentFormats_tZoneStrInvalid(self):
         test = ArgumentHandler("+00", "2016-05-23", "2017-05-23", "@test")
-        with self.assertRaises(AssertionError):
-            test.checkArgumentFormats()
+        self.assertFalse(test.checkArgumentFormats())
 
     def test_checkArgumentFormats_sDateStrValid(self):
         test = ArgumentHandler("+10:00", "0000-00-00", "2017-05-23", "@test")
@@ -51,8 +49,7 @@ class ArgumentHandlerTests(unittest.TestCase):
 
     def test_checkArgumentFormats_sDateStrInvalid(self):
         test = ArgumentHandler("+10:00", "00-00-0000", "2017-05-23", "@test")
-        with self.assertRaises(AssertionError):
-            test.checkArgumentFormats()
+        self.assertFalse(test.checkArgumentFormats())
 
     def test_checkArgumentFormats_eDateStrValid(self):
         test = ArgumentHandler("+10:00", "2016-05-23", "0000-00-00", "@test")
@@ -60,8 +57,7 @@ class ArgumentHandlerTests(unittest.TestCase):
 
     def test_checkArgumentFormats_eDateStrInvalid(self):
         test = ArgumentHandler("+10:00", "2016-05-23", "00-00-0000", "@test")
-        with self.assertRaises(AssertionError):
-            test.checkArgumentFormats()
+        self.assertFalse(test.checkArgumentFormats())
 
     def test_checkArgumentFormats_uHandleStrValid(self):
         test = ArgumentHandler("+10:00", "2016-05-23", "2017-05-23", "@x")
@@ -69,8 +65,7 @@ class ArgumentHandlerTests(unittest.TestCase):
 
     def test_checkArgumentFormats_eDateStrInvalid(self):
         test = ArgumentHandler("+10:00", "2016-05-23", "2017-05-23", "@")
-        with self.assertRaises(AssertionError):
-            test.checkArgumentFormats()
+        self.assertFalse(test.checkArgumentFormats())
 
     # Tests for checkTimeZoneFormat
     def test_checkTimeZoneFormat_validBoundary(self):
@@ -79,8 +74,7 @@ class ArgumentHandlerTests(unittest.TestCase):
         
     def test_checkTimeZoneFormat_invalidBoundary(self):
         test = ArgumentHandler(None, None, None, None)
-        with self.assertRaises(AssertionError):
-            test.checkTimeZoneFormat("+00")
+        self.assertFalse(test.checkTimeZoneFormat("+00"))
         
     def test_checkTimeZoneFormat_regular(self):
         test = ArgumentHandler(None, None, None, None)
@@ -93,8 +87,7 @@ class ArgumentHandlerTests(unittest.TestCase):
         
     def test_checkDateFormat_invalidBoundary(self):
         test = ArgumentHandler(None, None, None, None)
-        with self.assertRaises(AssertionError):
-            test.checkDateFormat("00-00-0000")
+        self.assertFalse(test.checkDateFormat("00-00-0000"))
         
     def test_checkDateFormat_regular(self):
         test = ArgumentHandler(None, None, None, None)
@@ -107,8 +100,7 @@ class ArgumentHandlerTests(unittest.TestCase):
         
     def test_checkUserHandleFormat_invalidBoundary(self):
         test = ArgumentHandler(None, None, None, None)
-        with self.assertRaises(AssertionError):
-            test.checkUserHandleFormat("@")
+        self.assertFalse(test.checkUserHandleFormat("@"))
         
     def test_checkUserHandleFormat_regular(self):
         test = ArgumentHandler(None, None, None, None)
@@ -245,7 +237,7 @@ class ArgumentHandlerTests(unittest.TestCase):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret=hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4\naccess_token=loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM\naccess_secret=21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch"), create=True) as m:
             with open('codes.txt', 'r') as h:
-                with self.assertRaises(UnboundLocalError):
+                with self.assertRaises(ValueError):
                     api = apiCreator(h)
 
 if __name__ == "__main__":
