@@ -1,12 +1,10 @@
 import unittest
 import datetime
+import tweepy
 from main import *
 from unittest.mock import MagicMock
 from unittest.mock import mock_open
 from unittest.mock import patch
-
-# TODO: check for branch coverage, because I can't remember what software is
-# used for it
 
 class MainTests(unittest.TestCase):
     # Tests for isInt
@@ -280,12 +278,20 @@ class MainTests(unittest.TestCase):
         self.assertTrue(test.time.hour == 13 and test.time.minute == 18)
 
     #tests for collectTweets
-    def test_collectTweets_regular(self):
+    @patch('tweepy.API.user_timeline')
+    def test_collectTweets_regular(self, mock_user_timeline):
         m = mock_open()
-        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token= \naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
+        api = None
+        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 api = createApi(h)
-        api.user_timeline = MagicMock() #doesn't work
+        mockedTweet = tweepy.Status()
+        mockedTweet.created_at = datetime.datetime(2017, 5, 24, 2, 37, 18)
+        mockedTweet.text = "This is a mocked tweet"
+        mockedTweet.id = 1
+        mock_user_timeline.return_value = [mockedTweet]#MagicMock(return_value=[mockedTweet])
+        result = collectTweets(datetime.timedelta(hours=10), datetime.date(2017, 5, 24), datetime.date(2017, 5, 26), "@x", api)
+        print("LOGGING: " + str(result))
         
 
                 
