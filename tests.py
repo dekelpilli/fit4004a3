@@ -214,29 +214,51 @@ class MainTests(unittest.TestCase):
         result = test.formatDate("0001-01-01")
         self.assertTrue(result.year == 1 and result.month == 1 and result.day == 1)
 
-    #tests for apiCreator]
+    #tests for apiCreator
+    
+    #because a set of keys is either valid or invalid, there is no boundary case
+    
+    def test_apiCreator_invalidBoundary(self):
+        m = mock_open()
+        with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret= \naccess_token= \naccess_secret= "), create=True) as m:
+            with open('codes.txt', 'r') as h:
+                with self.assertRaises(tweepy.error.TweepError):
+                    api = apiCreator(h)
+                    
     def test_apiCreator_regular(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 api = apiCreator(h)
+                h.close()
 
         #consumer_key is saved as a byte literal, b"a" != "a"
         self.assertTrue(api.auth.consumer_key == b"yhPn4WdJK2punYXi7HgIs6Jaz" and api.auth.consumer_secret == b"Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv" and api.auth.access_token == "867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x" and api.auth.access_token_secret == "EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY")
 
-    #because a set of keys is either valid or invalid, there is no boundary case
-##    def test_apiCreator_validBoundary(self):
-##        m = mock_open()
-##        with patch('__main__.open', mock_open(read_data="consumer_key=a\nconsumer_secret=1\naccess_token=2\naccess_secret=3"), create=True) as m:
-##            with open('codes.txt', 'r') as h:
-##                api = apiCreator(h)
-##
-##        self.assertTrue(api.auth.consumer_key == b"a" and api.auth.consumer_secret == b"1" and api.auth.access_token == "2" and api.auth.access_token_secret == "3")        
-
-    #just make more of these and one where all are invalid? Not really sure this a good 'invalid boundary', tbh
     def test_apiCreator_invalidConsumerKey(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
+            with open('codes.txt', 'r') as h:
+                with self.assertRaises(tweepy.error.TweepError):
+                    api = apiCreator(h)
+
+    def test_apiCreator_invalidConsumerSecret(self):
+        m = mock_open()
+        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret= \naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
+            with open('codes.txt', 'r') as h:
+                with self.assertRaises(tweepy.error.TweepError):
+                    api = apiCreator(h)
+
+    def test_apiCreator_invalidAccessToken(self):
+        m = mock_open()
+        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token= \naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
+            with open('codes.txt', 'r') as h:
+                with self.assertRaises(tweepy.error.TweepError):
+                    api = apiCreator(h)
+
+    def test_apiCreator_invalidAccessToken(self):
+        m = mock_open()
+        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret= "), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
                     api = apiCreator(h)
