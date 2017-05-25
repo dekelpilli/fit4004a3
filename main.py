@@ -39,7 +39,6 @@ def apiCreator(codeFile):
     #print(codes)
 
     for line in codes:
-        print(line)
         if line.count("consumer_key=") == 1:
             consumerKey = getCode(line)
         elif line.count("consumer_secret=") == 1:

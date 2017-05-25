@@ -217,12 +217,12 @@ class MainTests(unittest.TestCase):
     #tests for apiCreator]
     def test_apiCreator_regular(self):
         m = mock_open()
-        with patch('__main__.open', mock_open(read_data="consumer_key=YTfdTejS0WWcAPSmw4fiQ8xPX\nconsumer_secret=hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4\naccess_token=loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM\naccess_secret=21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch"), create=True) as m:
+        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 api = apiCreator(h)
 
         #consumer_key is saved as a byte literal, b"a" != "a"
-        self.assertTrue(api.auth.consumer_key == b"YTfdTejS0WWcAPSmw4fiQ8xPX" and api.auth.consumer_secret == b"hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4" and api.auth.access_token == "loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM" and api.auth.access_token_secret == "21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch")
+        self.assertTrue(api.auth.consumer_key == b"yhPn4WdJK2punYXi7HgIs6Jaz" and api.auth.consumer_secret == b"Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv" and api.auth.access_token == "867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x" and api.auth.access_token_secret == "EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY")
 
     #because a set of keys is either valid or invalid, there is no boundary case
 ##    def test_apiCreator_validBoundary(self):
@@ -236,7 +236,7 @@ class MainTests(unittest.TestCase):
     #just make more of these and one where all are invalid? Not really sure this a good 'invalid boundary', tbh
     def test_apiCreator_invalidConsumerKey(self):
         m = mock_open()
-        with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret=hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4\naccess_token=loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM\naccess_secret=21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch"), create=True) as m:
+        with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
                     api = apiCreator(h)
