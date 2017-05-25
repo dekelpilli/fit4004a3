@@ -1,6 +1,7 @@
 import unittest
 import datetime
 import tweepy
+import matplotlib
 from main import *
 from unittest.mock import MagicMock
 from unittest.mock import mock_open
@@ -308,9 +309,27 @@ class MainTests(unittest.TestCase):
         date3 = bool(datetime.datetime.combine(result[2].date, result[2].time) == mockedTweet3.created_at + datetime.timedelta(hours=10))
         #print("XX LOGGING: new = " + str(datetime.datetime.combine(result[0].date, result[0].time)) + ", old = " + str(mockedTweet1.created_at))
         self.assertTrue(resultCount and type1 and type2 and type3 and date1 and date2 and date3)
-        
 
-                
+    #test for plotTweets     
+    def test_plotTweets_regular(self):
+        tweets = [Tweet("@user", datetime.date(2017, 5, 20), datetime.time(19, 43, 24, 241775)),
+                  Tweet("@user2", datetime.date(2017, 5, 15), datetime.time(19, 43, 24, 241775)),
+                  Tweet("@user3", datetime.date(2017, 4, 15), datetime.time(19, 43, 24, 241775))]
+        plot = plotTweets(tweets, datetime.date(2017, 3, 25), datetime.date(2017, 5, 25))
+        assert isinstance(plot, matplotlib.figure.Figure)
+
+    def test_plotTweets_validBoundary(self):
+        tweets = []
+        plot = plotTweets(tweets, datetime.date(2017, 5, 25), datetime.date(2017, 5, 25))
+        assert isinstance(plot, matplotlib.figure.Figure)
+
+    def test_plotTweets_invalid(self):
+        tweets = [Tweet("@user", None, datetime.time(19, 43, 24, 241775)),
+                  Tweet("@user2", datetime.date(2017, 5, 15), None),
+                  Tweet("@user3", "datetime.date(2017, 4, 15)", datetime.time(19, 43, 24, 241775))]
+        with self.assertRaises(AttributeError):
+            plot = plotTweets(tweets, datetime.date(2017, 5, 25), datetime.date(2017, 3, 25))
+        
 
 if __name__ == "__main__":
     unittest.main()
