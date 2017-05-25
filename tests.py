@@ -263,17 +263,17 @@ class MainTests(unittest.TestCase):
 
     # tests for adjustTime    
     def test_adjustTime_validBoundary(self):
-        test = Tweet(None, None, datetime.date(2017, 5, 25), datetime.time(3, 18))
+        test = Tweet(None, datetime.date(2017, 5, 25), datetime.time(3, 18))
         test.adjustTime(datetime.timedelta(seconds = 60))
         self.assertTrue(test.time.hour == 3 and test.time.minute == 19)
 
     def test_adjustTime_invalidBoundary(self):
-        test = Tweet(None, None, datetime.date(1, 1, 1), datetime.time(3, 18))
+        test = Tweet(None, datetime.date(1, 1, 1), datetime.time(3, 18))
         with self.assertRaises(OverflowError):
             test.adjustTime(datetime.timedelta(weeks=-53))
 
     def test_adjustTime_regular(self):
-        test = Tweet(None, None, datetime.date(2017, 5, 25), datetime.time(3, 18))
+        test = Tweet(None, datetime.date(2017, 5, 25), datetime.time(3, 18))
         test.adjustTime(datetime.timedelta(hours = 10))
         self.assertTrue(test.time.hour == 13 and test.time.minute == 18)
 
@@ -303,10 +303,10 @@ class MainTests(unittest.TestCase):
         type1 = isinstance(result[0], Tweet)
         type2 = isinstance(result[1], Tweet)
         type3 = isinstance(result[2], Tweet)
-        date1 = bool(datetime.datetime.combine(result[0].date, result[0].time) == mockedTweet1.created_at)
-        date2 = bool(datetime.datetime.combine(result[1].date, result[1].time) == mockedTweet2.created_at)
-        date3 = bool(datetime.datetime.combine(result[2].date, result[2].time) == mockedTweet3.created_at)
-        #print("XX LOGGING: " + str(text1))
+        date1 = bool(datetime.datetime.combine(result[0].date, result[0].time) == mockedTweet1.created_at + datetime.timedelta(hours=10))
+        date2 = bool(datetime.datetime.combine(result[1].date, result[1].time) == mockedTweet2.created_at + datetime.timedelta(hours=10))
+        date3 = bool(datetime.datetime.combine(result[2].date, result[2].time) == mockedTweet3.created_at + datetime.timedelta(hours=10))
+        #print("XX LOGGING: new = " + str(datetime.datetime.combine(result[0].date, result[0].time)) + ", old = " + str(mockedTweet1.created_at))
         self.assertTrue(resultCount and type1 and type2 and type3 and date1 and date2 and date3)
         
 
