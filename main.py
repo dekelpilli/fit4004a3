@@ -1,7 +1,8 @@
 import tweepy
 import sys
 import datetime
-from datetime import tzinfo
+import requests
+#from datetime import tzinfo
 import matplotlib.pyplot as plt
 
 
@@ -23,12 +24,12 @@ class Tweet:
         self.time = date.time()
         self.date = date.date()
 
-def uploadPlot(api, plotName):
-    plot = open(plotName, "r")
-    api.update_with_media(plotName, file=plot)
+##def uploadPlot(api, plotName):
+##    api.update_with_media(plotName)
+
 
 #Tweet objects
-def plotTweets(tweets):
+def plotTweets(tweets, sDate, eDate):
     times = {}
     for i in range(24):
         times[i] = 0
@@ -36,12 +37,15 @@ def plotTweets(tweets):
     for tweet in tweets:
         times[tweet.time.hour] += 1
 
+    days = (min(eDate, datetime.datetime.now().date()) - sDate).days + 1
+
     frequency = []
     for time in times:
-        frequency.append(times[time])
+        frequency.append(times[time]/days)
     #print(frequency)
     plt.plot(frequency)
-    plt.ylabel("Amount of tweets")
+    plt.ylabel("Average tweets per day")
+    plt.xlabel("Time of day")
     fig = plt.gcf()
     fig.savefig("plot.png", bbox_inches="tight")
 
@@ -241,9 +245,10 @@ if __name__ == "__main__":
     api = createApi(open("codes.txt", "r"))
 
     tweets = collectTweets(timeZone, startDate, endDate, userHandle, api)
+    
     #print(len(tweets))
 ##    for tweet in tweets:
 ##        print(tweet.text)
-    plot = plotTweets(tweets)
-
-    uploadPlot(api, "plot.png")
+    plot = plotTweets(tweets, startDate, endDate)
+    
+    api.update_with_media("plot.png")
