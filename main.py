@@ -88,6 +88,8 @@ def collectTweets(tZone, sDate, eDate, uHandle, api):
     collectedTweets = [] #stores Tweet objects
     pageNum = 1
 
+    tweetIds = {}
+
     #read tweets from specified user, within specified dates and save as Tweet objects
     while True:
         tweets = api.user_timeline(uHandle, page = pageNum) #tweets contains 20 tweets. Every time pageNum increases, it moves on to the next 20.
@@ -97,6 +99,11 @@ def collectTweets(tZone, sDate, eDate, uHandle, api):
             #print(str(len(collectedTweets)) + "tweets makes me angry")
             return collectedTweets
         for tweet in tweets:
+            if tweet.id in tweetIds:
+                return collectedTweets #returns to visited tweet, finish to avoid infinite loops. Good failsafe, but should, theoretically, only get user while testing.
+            else:
+                tweetIds[tweet.id] = True
+            
             tweetTime = tweet.created_at
             tweetObj = Tweet(uHandle, tweet.text.encode('UTF-8'), tweetTime.date(), tweetTime.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
             tweetObj.adjustTime(tZone)
