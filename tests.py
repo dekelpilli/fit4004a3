@@ -8,7 +8,7 @@ from unittest.mock import patch
 # TODO: check for branch coverage, because I can't remember what software is
 # used for it
 
-class ArgumentHandlerTests(unittest.TestCase):
+class MainTests(unittest.TestCase):
     # Tests for isInt
     def test_isInt_validBoundary(self):
         test = ArgumentHandler(None, None, None, None)
@@ -223,21 +223,22 @@ class ArgumentHandlerTests(unittest.TestCase):
 
         #consumer_key is saved as a byte literal, b"a" != "a"
         self.assertTrue(api.auth.consumer_key == b"YTfdTejS0WWcAPSmw4fiQ8xPX" and api.auth.consumer_secret == b"hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4" and api.auth.access_token == "loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM" and api.auth.access_token_secret == "21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch")
-    
-    def test_apiCreator_validBoundary(self):
-        m = mock_open()
-        with patch('__main__.open', mock_open(read_data="consumer_key=a\nconsumer_secret=1\naccess_token=2\naccess_secret=3"), create=True) as m:
-            with open('codes.txt', 'r') as h:
-                api = apiCreator(h)
 
-        self.assertTrue(api.auth.consumer_key == b"a" and api.auth.consumer_secret == b"1" and api.auth.access_token == "2" and api.auth.access_token_secret == "3")        
+    #because a set of keys is either valid or invalid, there is no boundary case
+##    def test_apiCreator_validBoundary(self):
+##        m = mock_open()
+##        with patch('__main__.open', mock_open(read_data="consumer_key=a\nconsumer_secret=1\naccess_token=2\naccess_secret=3"), create=True) as m:
+##            with open('codes.txt', 'r') as h:
+##                api = apiCreator(h)
+##
+##        self.assertTrue(api.auth.consumer_key == b"a" and api.auth.consumer_secret == b"1" and api.auth.access_token == "2" and api.auth.access_token_secret == "3")        
 
     #just make more of these and one where all are invalid? Not really sure this a good 'invalid boundary', tbh
-    def test_apiCreator_invalidBoundaryConsumerKey(self):
+    def test_apiCreator_invalidConsumerKey(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret=hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4\naccess_token=loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM\naccess_secret=21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch"), create=True) as m:
             with open('codes.txt', 'r') as h:
-                with self.assertRaises(ValueError):
+                with self.assertRaises(tweepy.error.TweepError):
                     api = apiCreator(h)
 
 if __name__ == "__main__":

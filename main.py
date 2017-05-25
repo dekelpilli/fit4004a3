@@ -16,9 +16,9 @@ class Tweet:
         self.time = time
 
     #change is a timedelta object
-    def adjustTime(change):
+    def adjustTime(delta):
         date = datetime.datetime.combine(self.date, self.time)
-        date += timedelta
+        date += delta
         self.time = date.time()
         self.date = date.date()
 
@@ -39,7 +39,7 @@ def apiCreator(codeFile):
     #print(codes)
 
     for line in codes:
-        #print(line)
+        print(line)
         if line.count("consumer_key=") == 1:
             consumerKey = getCode(line)
         elif line.count("consumer_secret=") == 1:
@@ -54,8 +54,7 @@ def apiCreator(codeFile):
     auth.set_access_token(accessToken, accessSecret)
     api = tweepy.API(auth)
 
-    if not api.verify_credentials:
-        raise ValueError
+    api.verify_credentials()
 
     return api
 
@@ -77,8 +76,8 @@ def tweetCollector(tZone, sDate, eDate, uHandle, codeFile):
             return collectedTweets
         for tweet in tweets:
             tweetTime = tweet.created_at
-            tweetObj = Tweet(uHandle, tweet.text, tweetTime.date(), time.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
-            tweetObj.adjustTime(tZone);
+            tweetObj = Tweet(uHandle, tweet.text, tweetTime.date(), tweetTime.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
+            tweetObj.adjustTime(tZone)
             tweetTime = datetime.datetime.combine(tweetObj.date(), tweetObj.time())
             
             if tweetTime >= sDate and tweetTime <= eDate:
