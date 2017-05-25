@@ -6,6 +6,7 @@ from main import *
 from unittest.mock import MagicMock
 from unittest.mock import mock_open
 from unittest.mock import patch
+from Tkinter import *
 
 class MainTests(unittest.TestCase):
     # Tests for isInt
