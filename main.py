@@ -11,9 +11,11 @@ class Tweet:
     #text is a string containing content of tweet
     #date is a datetime.date() object
     #time is a datetime.time() object
-    def __init__(self, user, text, date, time):
+
+    #def __init__(self, user, text, date, time):
+    def __init__(self, user, date, time):
         self.user = user
-        self.text = text
+        #self.text = text
         self.date = date
         self.time = time
 
@@ -47,7 +49,8 @@ def plotTweets(tweets, sDate, eDate):
     plt.ylabel("Average tweets per day")
     plt.xlabel("Time of day")
     fig = plt.gcf()
-    fig.savefig("plot.png", bbox_inches="tight")
+    return fig
+    #fig.savefig("plot.png", bbox_inches="tight")
 
 def getCode(line):
     return line.split("=")[1].strip()
@@ -106,7 +109,8 @@ def collectTweets(tZone, sDate, eDate, uHandle, api):
                 tweetIds[tweet.id] = True
             
             tweetTime = tweet.created_at
-            tweetObj = Tweet(uHandle, tweet.text.encode('UTF-8'), tweetTime.date(), tweetTime.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
+            #tweetObj = Tweet(uHandle, tweet.text.encode('UTF-8'), tweetTime.date(), tweetTime.time()) #text not needed, only for testing
+            tweetObj = Tweet(uHandle, tweetTime.date(), tweetTime.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
             tweetObj.adjustTime(tZone)
             tweetTime = tweetObj.date
             

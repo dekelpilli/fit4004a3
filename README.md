@@ -1,16 +1,21 @@
 # FlowUnderStacks - Assignment 3
 
 ## Getting started  
-To run this program, you need to have Tweepy and Python 3.5.2 installed. If you do not, follow the instructions [here](https://github.com/tweepy/tweepy/blob/master/README.md) and [here](https://wiki.python.org/moin/BeginnersGuide/Download) to do so.
+To run this program, you need to have the following programs installed: 
+- Python 3.5.2. If you do not have it installed, follow these [instructions](https://www.howtogeek.com/197947/how-to-install-python-on-windows/) to do so. You can download Python 3.5.2 [here](https://www.python.org/downloads/release/python-352/).
+- Tweepy: [Instructions](https://github.com/tweepy/tweepy/blob/master/README.md)
+- Matplotlib: [Instructions](https://github.com/ehmatthes/pcc/blob/master/chapter_15/README.md)
 
 To start the program, open the terminal in the folder that contains main.py and enter the following command:
 
 ### For Linux:
 python main.py -t [timezone] -a [startDate] -b [endDate] -i [userId]
 
+*Example*: python main.py -t +10:00 -a 2017-05-18 -b 2017-05-25 -i @rgmerk
 ### For Windows:
 main.py -t [timezone] -a [startDate] -b [endDate] -i [userId]
-
+  
+*Example:* main.py -t +10:00 -a 2017-05-18 -b 2017-05-25 -i @rgmerk
 #### timezone
 Formatted as +/-HH:MM. This is the amount of time to add to any given tweet's time when recorded in the user's time zone.   
 *Example:* -05:30
@@ -22,6 +27,8 @@ Formatted as YYYY-MM-DD. When to start and end the tweet analysis.
 #### userId
 Formatted as @userIdHere. The handle of the user whose tweets you want analysed.  
 *Example:* @rgmerk
+
+
 
 ## Test Selection Strategy
 The selection of test cases will involve multiple selection strategies. These strategies will be defined in a specific order of execution when generating test cases, with the intention of earlier strategies being more specific and generating tests for the most common and useful functionality, and later ones being useful for generating tests for edge cases that the previous strategies may miss.
@@ -58,8 +65,8 @@ After branch coverage has been done, we will check for statement (or LOC) covera
 Once all other white box testing methods have been exhausted, we will add tests to any remaining features or aspects of the program that we feel aren’t sufficiently tested. 
 
 ### Rationale
-Due to the simple nature of our system, and the fact that we’ll be using both black box and white box testing techniques, we&rsquo;ve decided that our black box tests should be mostly to test for the absence of features/functionality. With that in mind, we adopted boundary value analysis to check that the requirements are being met.  
-<br/>
-Our white box testing techniques are being used primarily to ensure that our black box techniques have not completely missed entire sections of code by accident. Due to the simple nature of the system, 100% coverage is being required by our tests, given that that should not result in too large a test suite.  
-<br/>
+Due to the simple nature of our system, and the fact that we’ll be using both black box and white box testing techniques, we&rsquo;ve decided that our black box tests should be mostly to test for the absence of features/functionality. With that in mind, we adopted boundary value analysis to check that the requirements are being met.   
+  
+Our white box testing techniques are being used primarily to ensure that our black box techniques have not completely missed entire sections of code by accident. Due to the simple nature of the system, 100% coverage is being required by our tests, given that that should not result in too large a test suite.   
+  
 Exploratory testing will be used to supplement the above techniques and cover anything we&rsquo;ve missed. We expect that exploratory white box testing will produce very few tests.
