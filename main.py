@@ -48,9 +48,8 @@ def plotTweets(tweets, sDate, eDate):
     plt.plot(frequency)
     plt.ylabel("Average tweets per day")
     plt.xlabel("Time of day")
-    fig = plt.gcf()
-    return fig
-    #fig.savefig("plot.png", bbox_inches="tight")
+    return plt.gcf()
+    
 
 def getCode(line):
     return line.split("=")[1].strip()
@@ -261,5 +260,8 @@ if __name__ == "__main__":
 ##    for tweet in tweets:
 ##        print(tweet.text)
     plot = plotTweets(tweets, startDate, endDate)
+    plot.savefig("plot.png", bbox_inches="tight")
+    
+
     
     api.update_with_media("plot.png")
