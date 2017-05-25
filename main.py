@@ -2,6 +2,7 @@ import tweepy
 import sys
 import datetime
 from datetime import tzinfo
+import matplotlib.pyplot as plt
 
 
 class Tweet:
@@ -22,8 +23,22 @@ class Tweet:
         self.time = date.time()
         self.date = date.date()
 
+#Tweet objects
 def plotTweets(tweets):
-    #do analysis stuff
+    times = {}
+    for i in range(24):
+        times[i] = 0
+
+    for tweet in tweets:
+        times[tweet.time.hour] += 1
+
+    frequency = []
+    for time in times:
+        frequency.append(times[time])
+    #print(frequency)
+    plt.plot(frequency)
+    plt.ylabel("Amount of tweets")
+    plt.show()
     pass
 
 
@@ -88,7 +103,6 @@ def collectTweets(tZone, sDate, eDate, uHandle, codeFile):
             elif tweetTime < sDate:
                 return collectedTweets #return tweets
         pageNum += 1
-        print(pageNum)
 
 
     return collectedTweets
@@ -222,5 +236,7 @@ if __name__ == "__main__":
     timeZone, startDate, endDate = argHandler.formatArguments()
 
     tweets = collectTweets(timeZone, startDate, endDate, userHandle,open("codes.txt", "r"))
-    for tweet in tweets:
-        print(tweet.text)
+    #print(len(tweets))
+##    for tweet in tweets:
+##        print(tweet.text)
+    plotTweets(tweets)
