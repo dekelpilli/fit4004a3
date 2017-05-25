@@ -3,9 +3,9 @@ import sys
 import datetime
 import requests
 #from datetime import tzinfo
-import matplotlib.pyplot as plt
-plt.use('Agg')
-
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 
 class Tweet:
     #user is a string, @rgmerk
