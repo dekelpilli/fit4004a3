@@ -223,7 +223,7 @@ if __name__ == "__main__":
     #timeZone = float(sys.argv[sys.argv.index('-t')+1])
     #assert timeZone <= 24 and timeZone >= -24
 
-    argHandler = ArgumentHandler(timeZoneBase, startDateBase, endDateBase, userHandleBase)
+    argHandler = ArgumentHandler(timeZoneBase, startDateBase, endDateBase, userHandle)
     # assert format of command line args
     try:
         argHandler.checkArgumentFormats()
@@ -232,7 +232,7 @@ if __name__ == "__main__":
         sys.exit("At least one argument was in the incorrect format")
 
     # format args into better objs
-        timeZone, startDate, endDate = argHandler.formatArguments()
+    timeZone, startDate, endDate = argHandler.formatArguments()
 
     tweetCollector(timeZone, startDate, endDate, userHandle)
     print("no crash so far")
