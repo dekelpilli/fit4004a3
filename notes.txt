@@ -1,0 +1,28 @@
+1: 	Change checkers to this:	
+	def checkTimeZoneFormat(self, tZone):
+        try:
+            assert len(tZone) == 6
+            assert tZone[0] in ["+", "-"]
+            assert tZone[3] == ":"
+            assert self.isInt(tZone[1]) and self.isInt(tZone[2]) and self.isInt(tZone[4]) and self.isInt(tZone[5])
+        except AssertionError:
+            return False
+        return True
+
+    def checkDateFormat(self, date):
+        try:
+            assert len(date) == 10
+            assert date[4] == "-" and date[7] == "-"
+            assert self.isInt(date[0]) and self.isInt(date[1]) and self.isInt(date[2]) and self.isInt(date[3]) and self.isInt(date[5]) and self.isInt(date[6]) and self.isInt(date[8]) and self.isInt(date[9])
+        except AssertionError:
+            return False
+        return True
+
+    def checkUserHandleFormat(self, uHandle):
+        try:
+            assert len(uHandle) > 1
+            assert uHandle[0] == "@"
+        except AssertionError:
+            return False
+        return True
+2: 	You actually can test things outside of a class, just use "from main import *" the call the method like a normal one. From merkel's unit testing pdf: "With mock, you can create mock objects which can substitute for your own, or builtin objects, including methods that are not associated with a class."

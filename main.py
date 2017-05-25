@@ -1,18 +1,42 @@
 import tweepy
 import sys
 import datetime
-
+from datetime import tzinfo
 
 
 class Tweet:
+    #user is a string, @rgmerk
+    #text is a string containing content of tweet
+    #date is a datetime.date() object
+    #time is a datetime.time() object
     def __init__(self, user, text, date, time):
         self.user = user
         self.text = text
         self.date = date
         self.time = time
 
+    #string, in format "+/-HH:MM"
     def adjustTime(change):
-        #TODO: adjust time of tweet by change, incl. date if it changes
+        hour, minute = change.split(":")
+        hour = int(hour)
+        if hour<0:
+            minute = -1 * int(minute)
+        else:
+            minute = int(minute)
+
+        
+        newHour = self.time.hour + hour
+        newMinute = self.time.minute + minute
+
+        if newMinute>59:
+            newHour += newMinute//60
+            newMinute = newMinute % 60
+
+        if newHour>23:
+            newDate = self.date.day + newHour//24 #newhour//24 should always be 1
+            newHour = newHour % 24           
+            
+
         pass
 
 def tweetAnalyser(tweets):
@@ -23,19 +47,24 @@ def tweetAnalyser(tweets):
 def getCode(line):
     return line.split("=")[1].strip()
 
-def apiCreator(filename):
+def apiCreator(file):
     #read privacy codes from file
-    codes = open("codes.txt", "r").readlines()
+    #codes = open(filename, "r").readlines()
+    codes = file.readlines()
+    file.close()
+
+    #print(codes)
 
     for line in codes:
-        if line.index("consumer_key=") == 0:
-            consumerKey = line.getCode()
-        elif line.index("consumer_secret=") == 0:
-            consumerSecret = line.getCode()
-        elif line.index("access_token=") == 0:
-            accessToken = line.getCode()
-        elif line.index("access_secret=") == 0:
-            accessSecret = line.getCode()
+        #print(line)
+        if line.count("consumer_key=") == 1:
+            consumerKey = getCode(line)
+        elif line.count("consumer_secret=") == 1:
+            consumerSecret = getCode(line)
+        elif line.count("access_token=") == 1:
+            accessToken = getCode(line)
+        elif line.count("access_secret=") == 1:
+            accessSecret = getCode(line)
 
     #set up API
     auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
@@ -46,7 +75,7 @@ def apiCreator(filename):
 
 
 
-## sDate and eDate are datetime objects, already adjusted
+## params are as given by user
 def tweetCollector(tZone, sDate, eDate, uHandle):
     api = apiCreator()
 
@@ -55,22 +84,32 @@ def tweetCollector(tZone, sDate, eDate, uHandle):
 
     #read tweets from specified user, within specified dates and save as Tweet objects
     while True:
-        tweets = api.user_timeline(uHandle, page = pageNum)
-        #tweets contains 20 tweets. Every time pageNum increases, it moves on to the next 20.
+        tweets = api.user_timeline(uHandle, page = pageNum) #tweets contains 20 tweets. Every time pageNum increases, it moves on to the next 20.
+
+        #if there are no more tweets and
+        if len(tweets) == 0:
+            return collectedTweets
         for tweet in tweets:
             tweetTime = tweet.created_at
+            tweetObj = Tweet(uHandle, tweet.text, tweetTime.date(), time.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
+            tweetObj.adjustTime(tZone);
+            tweetTime = datetime.datetime.combine(tweetObj.date(), tweetObj.time())
+            
             if tweetTime >= sDate and tweetTime <= eDate:
-                #able to get username from tweet using api.get_user(tweet.user.id).screen_name
-                tweetObj = Tweet(uHandle, tweet.text, tweetTime.date(), time.time())
+                collectedTweets.append(tweetObj)
+
+
+
+
             elif tweetTime < sDate:
                 continue
             elif tweetTime > eDate:
                 #TODO: adjust time of all tweet objects by tZone
-                
+
                 return collectedTweets #return tweets
         pageNum += 1
 
-    #should never get here
+
     return collectedTweets
 
 # TODO: move this into another file because it's bloody huge
@@ -83,7 +122,7 @@ class ArgumentHandler:
 
     # helper function that checks if string corresponds to an int
     def isInt(self, string):
-        try: 
+        try:
             int(string)
             return True
         except ValueError:
@@ -91,12 +130,12 @@ class ArgumentHandler:
 
     # checks that all args are in correct format
     def checkArgumentFormats(self):
-        self.checkTimeZoneFormat(self.tZoneStr) 
-        
+        self.checkTimeZoneFormat(self.tZoneStr)
+
         dates = [self.sDateStr, self.eDateStr]
         for date in dates:
             self.checkDateFormat(date)
-        
+
         self.checkUserHandleFormat(self.uHandleStr)
         return True
 
@@ -180,7 +219,7 @@ if __name__ == "__main__":
     userHandle = sys.argv[sys.argv.index('-i')+1]
 
     # I don't think this is correct. The spec says use ':', not '.'
-    
+
     #timeZone = float(sys.argv[sys.argv.index('-t')+1])
     #assert timeZone <= 24 and timeZone >= -24
 
