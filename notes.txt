@@ -25,4 +25,5 @@
         except AssertionError:
             return False
         return True
+
 2: 	You actually can test things outside of a class, just use "from main import *" the call the method like a normal one. From merkel's unit testing pdf: "With mock, you can create mock objects which can substitute for your own, or builtin objects, including methods that are not associated with a class."

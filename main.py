@@ -121,7 +121,7 @@ class ArgumentHandler:
         validDates = True
         dates = [self.sDateStr, self.eDateStr]
         for date in dates:
-            validDates = validDates and validself.checkDateFormat(date)
+            validDates = validDates and self.checkDateFormat(date)
 
         validUser = self.checkUserHandleFormat(self.uHandleStr)
         return validTz and validDates and validUser
