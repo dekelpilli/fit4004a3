@@ -48,8 +48,9 @@ def plotTweets(tweets, sDate, eDate):
     plt.plot(frequency)
     plt.ylabel("Average tweets per day")
     plt.xlabel("Time of day")
-    return plt.gcf()
-    
+    fig = plt.gcf()
+    return fig
+    #fig.savefig("plot.png", bbox_inches="tight")
 
 def getCode(line):
     return line.split("=")[1].strip()
@@ -214,6 +215,15 @@ class ArgumentHandler:
         day = int(date[2])
         return datetime.date(year, month, day)
 
+def validateArgumentObjectValues(timeZone, startDate, endDate):
+    try:
+        # between -23:55hrs and 23:55hrs
+        assert timeZone.seconds >= -86100 and timeZone.seconds <= 86100
+        assert startDate <= endDate
+        return True
+    except AssertionError:
+        return False
+
 if __name__ == "__main__":
     print(str(sys.argv));
 
@@ -250,6 +260,8 @@ if __name__ == "__main__":
 
     # format args into better objs
     timeZone, startDate, endDate = argHandler.formatArguments()
+    if not validateArgumentObjectValues(timeZone, startDate, endDate):
+        raise ValueError
 
     # generate API
     api = createApi(open("codes.txt", "r"))
@@ -260,8 +272,5 @@ if __name__ == "__main__":
 ##    for tweet in tweets:
 ##        print(tweet.text)
     plot = plotTweets(tweets, startDate, endDate)
-    plot.savefig("plot.png", bbox_inches="tight")
-    
-
     
     api.update_with_media("plot.png")

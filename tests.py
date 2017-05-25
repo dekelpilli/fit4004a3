@@ -357,9 +357,28 @@ class MainTests(unittest.TestCase):
         date3 = bool(datetime.datetime.combine(result[2].date, result[2].time) == mockedTweet3.created_at + datetime.timedelta(hours=10))
         
         self.assertTrue(resultCount and type1 and type2 and type3 and date1 and date2 and date3)
-        
 
-                
+    # tests for validateArgumentObjectValues
+    def test_validateArgumentObjectValues_validBoundary(self):
+        self.assertTrue(self.validateArgumentObjectValues(datetime.timedelta(hours=23, minutes=55), datetime.date(2017, 5, 25), datetime.date(2017, 5, 25)))
+
+    def test_validateArgumentObjectValues_invalidBoundary(self):
+        self.assertTrue(self.validateArgumentObjectValues(datetime.timedelta(hours=23, minutes=56), datetime.date(2017, 5, 25), datetime.date(2017, 5, 24)))
+
+    def test_validateArgumentObjectValues_regular(self):
+        self.assertTrue(self.validateArgumentObjectValues(datetime.timedelta(hours=5, minutes=56), datetime.date(2016, 5, 25), datetime.date(2017, 5, 24)))
+
+    def test_validateArgumentObjectValues_timeZoneValid(self):
+        self.assertTrue(self.validateArgumentObjectValues(datetime.timedelta(hours=23, minutes=55), datetime.date(2016, 5, 25), datetime.date(2017, 5, 24)))
+
+    def test_validateArgumentObjectValues_timeZoneInvalid(self):
+        self.assertTrue(self.validateArgumentObjectValues(datetime.timedelta(hours=23, minutes=56), datetime.date(2016, 5, 25), datetime.date(2017, 5, 24)))
+
+    def test_validateArgumentObjectValues_datesValid(self):
+        self.assertTrue(self.validateArgumentObjectValues(datetime.timedelta(hours=5, minutes=56), datetime.date(2017, 5, 25), datetime.date(2017, 5, 25)))
+
+    def test_validateArgumentObjectValues_datesInvalid(self):
+        self.assertTrue(self.validateArgumentObjectValues(datetime.timedelta(hours=5, minutes=56), datetime.date(2017, 5, 25), datetime.date(2017, 5, 24)))
 
 if __name__ == "__main__":
     unittest.main()
