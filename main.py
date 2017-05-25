@@ -1,9 +1,9 @@
 import tweepy
 import sys
 import datetime
-import requests
-#from datetime import tzinfo
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 
 
 class Tweet:
