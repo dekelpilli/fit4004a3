@@ -235,33 +235,50 @@ class MainTests(unittest.TestCase):
         #consumer_key is saved as a byte literal, b"a" != "a"
         self.assertTrue(api.auth.consumer_key == b"yhPn4WdJK2punYXi7HgIs6Jaz" and api.auth.consumer_secret == b"Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv" and api.auth.access_token == "867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x" and api.auth.access_token_secret == "EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY")
 
-    def test_apiCreator_invalidConsumerKey(self):
+    def test_apiCreator_consumerKeyInvalid(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
                     api = apiCreator(h)
 
-    def test_apiCreator_invalidConsumerSecret(self):
+    def test_apiCreator_consumerSecretInvalid(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret= \naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
                     api = apiCreator(h)
 
-    def test_apiCreator_invalidAccessToken(self):
+    def test_apiCreator_accessTokenInvalid(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token= \naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
                     api = apiCreator(h)
 
-    def test_apiCreator_invalidAccessToken(self):
+    def test_apiCreator_accessTokenInvalid(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret= "), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
                     api = apiCreator(h)
+
+    # tests for adjustTime
+    
+    def test_adjustTime_validBoundary(self):
+        test = Tweet(None, None, datetime.date(2017, 5, 25), datetime.time(3, 18))
+        test.adjustTime(datetime.timedelta(seconds = 60))
+        self.assertTrue(test.time.hour == 3 and test.time.minute == 19)
+
+    def test_adjustTime_invalidBoundary(self):
+        test = Tweet(None, None, datetime.date(1, 1, 1), datetime.time(3, 18))
+        with self.assertRaises(OverflowError):
+            test.adjustTime(datetime.timedelta(weeks=-53))
+
+    def test_adjustTime_regular(self):
+        test = Tweet(None, None, datetime.date(2017, 5, 25), datetime.time(3, 18))
+        test.adjustTime(datetime.timedelta(hours = 10))
+        self.assertTrue(test.time.hour == 13 and test.time.minute == 18)
 
 if __name__ == "__main__":
     unittest.main()

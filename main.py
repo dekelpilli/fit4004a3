@@ -16,7 +16,7 @@ class Tweet:
         self.time = time
 
     #change is a timedelta object
-    def adjustTime(delta):
+    def adjustTime(self, delta):
         date = datetime.datetime.combine(self.date, self.time)
         date += delta
         self.time = date.time()
