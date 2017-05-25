@@ -229,10 +229,8 @@ class ArgumentHandlerTests(unittest.TestCase):
             with open('codes.txt', 'r') as h:
                 api = apiCreator(h)
 
-        self.assertEqual(api.auth.consumer_key, b"YTfdTejS0WWcAPSmw4fiQ8xPX") #consumer_key is saved as a byte literal, b'a' != 'a'
-        self.assertEqual(api.auth.consumer_secret, b"hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4") 
-        self.assertEqual(api.auth.access_token, "loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM") 
-        self.assertEqual(api.auth.access_token_secret, "21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch")
+        #consumer_key is saved as a byte literal, b"a" != "a"
+        self.assertTrue(api.auth.consumer_key == b"YTfdTejS0WWcAPSmw4fiQ8xPX" and api.auth.consumer_secret == b"hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4" and api.auth.access_token == "loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM" and api.auth.access_token_secret == "21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch")
     
     def test_apiCreator_validBoundary(self):
         m = mock_open()
@@ -240,21 +238,15 @@ class ArgumentHandlerTests(unittest.TestCase):
             with open('codes.txt', 'r') as h:
                 api = apiCreator(h)
 
-        self.assertEqual(api.auth.consumer_key, b"a") 
-        self.assertEqual(api.auth.consumer_secret, b"1") 
-        self.assertEqual(api.auth.access_token, "2") 
-        self.assertEqual(api.auth.access_token_secret, "3")
-        
+        self.assertTrue(api.auth.consumer_key == b"a" and api.auth.consumer_secret == b"1" and api.auth.access_token == "2" and api.auth.access_token_secret == "3")        
 
     #just make more of these and one where all are invalid? Not really sure this a good 'invalid boundary', tbh
     def test_apiCreator_invalidBoundaryConsumerKey(self):
         m = mock_open()
-        try:
-            with patch('__main__.open', mock_open(read_data="consumer_keys=YTfdTejS0WWcAPSmw4fiQ8xPX\nconsumer_secret=hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4\naccess_token=loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM\naccess_secret=21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch"), create=True) as m:
-                with open('codes.txt', 'r') as h:
+        with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret=hl0XsCaljgZrjIgCtoWsEq6RG4NDFCOKv66ixHUnKMqqhBOmE4\naccess_token=loErRxTXlyomzGgZj0lmJ1HBoEvmWdXFONVfe1JNM\naccess_secret=21G2KPjE8baTIjU7r5pNKSbW2FR6KJvNfogeilxrShTch"), create=True) as m:
+            with open('codes.txt', 'r') as h:
+                with self.assertRaises(UnboundLocalError):
                     api = apiCreator(h)
-        except UnboundLocalError:
-            self.assertTrue(True) #probably not ideal. Not sure how to test that it's raising this error when it's expected.
 
 if __name__ == "__main__":
     unittest.main()
