@@ -223,13 +223,13 @@ class MainTests(unittest.TestCase):
         with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret= \naccess_token= \naccess_secret= "), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
-                    api = apiCreator(h)
+                    api = createApi(h)
                     
     def test_apiCreator_regular(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
-                api = apiCreator(h)
+                api = createApi(h)
                 h.close()
 
         #consumer_key is saved as a byte literal, b"a" != "a"
@@ -240,31 +240,30 @@ class MainTests(unittest.TestCase):
         with patch('__main__.open', mock_open(read_data="consumer_key= \nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
-                    api = apiCreator(h)
+                    api = createApi(h)
 
     def test_apiCreator_consumerSecretInvalid(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret= \naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
-                    api = apiCreator(h)
+                    api = createApi(h)
 
     def test_apiCreator_accessTokenInvalid(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token= \naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
-                    api = apiCreator(h)
+                    api = createApi(h)
 
     def test_apiCreator_accessTokenInvalid(self):
         m = mock_open()
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret= "), create=True) as m:
             with open('codes.txt', 'r') as h:
                 with self.assertRaises(tweepy.error.TweepError):
-                    api = apiCreator(h)
+                    api = createApi(h)
 
-    # tests for adjustTime
-    
+    # tests for adjustTime    
     def test_adjustTime_validBoundary(self):
         test = Tweet(None, None, datetime.date(2017, 5, 25), datetime.time(3, 18))
         test.adjustTime(datetime.timedelta(seconds = 60))
@@ -279,6 +278,17 @@ class MainTests(unittest.TestCase):
         test = Tweet(None, None, datetime.date(2017, 5, 25), datetime.time(3, 18))
         test.adjustTime(datetime.timedelta(hours = 10))
         self.assertTrue(test.time.hour == 13 and test.time.minute == 18)
+
+    #tests for collectTweets
+    def test_collectTweets_regular(self):
+        m = mock_open()
+        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token= \naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
+            with open('codes.txt', 'r') as h:
+                api = createApi(h)
+        api.user_timeline = MagicMock() #doesn't work
+        
+
+                
 
 if __name__ == "__main__":
     unittest.main()
