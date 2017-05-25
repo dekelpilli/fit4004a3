@@ -3,45 +3,39 @@ import sys
 import datetime
 import requests
 #from datetime import tzinfo
-import matplotlib
-matplotlib.use('Agg')
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
+
 
 class Tweet:
     #user is a string, @rgmerk
     #text is a string containing content of tweet
     #date is a datetime.date() object
     #time is a datetime.time() object
-
-    #def __init__(self, user, text, date, time):
     def __init__(self, user, date, time):
         self.user = user
-        #self.text = text
         self.date = date
         self.time = time
 
-    #change is a timedelta object
+    #delta is a timedelta object
     def adjustTime(self, delta):
         date = datetime.datetime.combine(self.date, self.time)
         date += delta
         self.time = date.time()
         self.date = date.date()
 
-##def uploadPlot(api, plotName):
-##    api.update_with_media(plotName)
 
 
-#Tweet objects
+#tweets contains Tweet objects, sDate and eDate are datetime.date() objects
 def plotTweets(tweets, sDate, eDate):
     times = {}
     for i in range(24):
-        times[i] = 0
+        times[i] = 0 #fill out hashmap keys
 
     for tweet in tweets:
         times[tweet.time.hour] += 1
 
-    days = (min(eDate, datetime.datetime.now().date()) - sDate).days + 1
-
+    days = (eDate - sDate).days + 1
+    
     frequency = []
     for time in times:
         frequency.append(times[time]/days)
@@ -51,17 +45,16 @@ def plotTweets(tweets, sDate, eDate):
     plt.xlabel("Time of day")
     fig = plt.gcf()
     return fig
-    #fig.savefig("plot.png", bbox_inches="tight")
+
 
 def getCode(line):
     return line.split("=")[1].strip()
 
+
+#codeFile is an already opened file
 def createApi(codeFile):
-    #read privacy codes from file
     codes = codeFile.readlines()
     codeFile.close()
-
-    #print(codes)
 
     for line in codes:
         if line.count("consumer_key=") == 1:
@@ -97,11 +90,9 @@ def collectTweets(tZone, sDate, eDate, uHandle, api):
     #read tweets from specified user, within specified dates and save as Tweet objects
     while True:
         tweets = api.user_timeline(uHandle, page = pageNum) #tweets contains 20 tweets. Every time pageNum increases, it moves on to the next 20.
-        #print("XX LOGGING: tweets = " + str(tweets))
-
+        
         #if there are no more tweets and sDate hasn't been reached yet
         if len(tweets) == 0:
-            #print(str(len(collectedTweets)) + " tweets makes me angry")
             return collectedTweets
         for tweet in tweets:
             if tweet.id in tweetIds:
@@ -109,16 +100,16 @@ def collectTweets(tZone, sDate, eDate, uHandle, api):
             else:
                 tweetIds[tweet.id] = True
             
-            tweetTime = tweet.created_at
-            #tweetObj = Tweet(uHandle, tweet.text.encode('UTF-8'), tweetTime.date(), tweetTime.time()) #text not needed, only for testing
+            tweetTime = tweet.created_at #datetime object of when tweet was created
             tweetObj = Tweet(uHandle, tweetTime.date(), tweetTime.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
             tweetObj.adjustTime(tZone)
             tweetTime = tweetObj.date
             
-            if tweetTime >= sDate and tweetTime <= eDate:
+            if tweetTime >= sDate and tweetTime <= eDate: #if date is valid, add tweet to list
                 collectedTweets.append(tweetObj)
 
-            elif tweetTime < sDate:
+            
+            elif tweetTime < sDate: #if tweet is before valid range, exit (because we're reading from newest to oldest)
                 return collectedTweets #return tweets
         pageNum += 1
 
@@ -153,6 +144,7 @@ class ArgumentHandler:
         validUser = self.checkUserHandleFormat(self.uHandleStr)
         return validTz and validDates and validUser
 
+    #the following three methods check that the command line arguments given are in the correct format
     def checkTimeZoneFormat(self, tZone):
         try:
             assert len(tZone) == 6
@@ -180,7 +172,7 @@ class ArgumentHandler:
             return False
         return True
 
-    # takes strings from command line args and formats them into more useful objects
+    # the following 3 mehtods take strings from command line args and formats them into more useful objects
     # assumes that strings are in correct format
     def formatArguments(self):
         # turn timezone string into timedelta obj
@@ -228,8 +220,7 @@ def validateArgumentObjectValues(timeZone, startDate, endDate):
 if __name__ == "__main__":
     print(str(sys.argv));
 
-    #world's best error handling:
-    #assert '-t' in sys.argv
+
     assert '-a' in sys.argv
     assert '-b' in sys.argv
     assert '-i' in sys.argv
@@ -237,24 +228,13 @@ if __name__ == "__main__":
     if '-t' in sys.argv:
         timeZoneBase = sys.argv[sys.argv.index('-t')+1]
     else:
-        timeZoneBase = "00:00"
+        timeZoneBase = "+00:00"
 
-    startDateBase = sys.argv[sys.argv.index('-a')+1] #TODO: check that this is less than current date+tZone
+    startDateBase = sys.argv[sys.argv.index('-a')+1] 
     endDateBase = sys.argv[sys.argv.index('-b')+1]
     userHandle = sys.argv[sys.argv.index('-i')+1]
 
-    # I don't think this is correct. The spec says use ':', not '.'
-
-    #timeZone = float(sys.argv[sys.argv.index('-t')+1])
-    #assert timeZone <= 24 and timeZone >= -24
-
     argHandler = ArgumentHandler(timeZoneBase, startDateBase, endDateBase, userHandle)
-    # assert format of command line args
-##    try:
-##        argHandler.checkArgumentFormats()
-##    except AssertionError:
-##        # TODO: add messages to each assertion
-##        sys.exit("At least one argument was in the incorrect format")
     
     if not argHandler.checkArgumentFormats():
         raise ValueError
@@ -269,9 +249,9 @@ if __name__ == "__main__":
 
     tweets = collectTweets(timeZone, startDate, endDate, userHandle, api)
     
-    #print(len(tweets))
-##    for tweet in tweets:
-##        print(tweet.text)
-    plot = plotTweets(tweets, startDate, endDate)
+    tweetMessage = "Frequency of tweets by " + userHandle + " between " + startDateBase + " and " + endDateBase + ". Timezone: UTC" + timeZoneBase #message to be tweeted out with image
+
+    plot = plotTweets(tweets, startDate, endDate) #save plot reference
+    plot.savefig("plot.png", bbox_inches="tight") #save file
     
-    api.update_with_media("plot.png")
+    api.update_with_media("plot.png", status=tweetMessage) #tweet it out to the world, available on https://twitter.com/A3Fit4004
