@@ -15,29 +15,12 @@ class Tweet:
         self.date = date
         self.time = time
 
-    #string, in format "+/-HH:MM"
+    #change is a timedelta object
     def adjustTime(change):
-        hour, minute = change.split(":")
-        hour = int(hour)
-        if hour<0:
-            minute = -1 * int(minute)
-        else:
-            minute = int(minute)
-
-        
-        newHour = self.time.hour + hour
-        newMinute = self.time.minute + minute
-
-        if newMinute>59:
-            newHour += newMinute//60
-            newMinute = newMinute % 60
-
-        if newHour>23:
-            newDate = self.date.day + newHour//24 #newhour//24 should always be 1
-            newHour = newHour % 24           
-            
-
-        pass
+        date = datetime.datetime.combine(self.date, self.time)
+        date += timedelta
+        self.time = date.time()
+        self.date = date.date()
 
 def tweetAnalyser(tweets):
     #do analysis stuff
@@ -47,11 +30,11 @@ def tweetAnalyser(tweets):
 def getCode(line):
     return line.split("=")[1].strip()
 
-def apiCreator(file):
+def apiCreator(codeFile):
     #read privacy codes from file
     #codes = open(filename, "r").readlines()
-    codes = file.readlines()
-    file.close()
+    codes = codeFile.readlines()
+    codeFile.close()
 
     #print(codes)
 
@@ -71,13 +54,16 @@ def apiCreator(file):
     auth.set_access_token(accessToken, accessSecret)
     api = tweepy.API(auth)
 
+    if not api.verify_credentials:
+        raise ValueError
+
     return api
 
 
 
 ## params are as given by user
-def tweetCollector(tZone, sDate, eDate, uHandle):
-    api = apiCreator()
+def tweetCollector(tZone, sDate, eDate, uHandle, codeFile):
+    api = apiCreator(codeFile)
 
     collectedTweets = [] #stores Tweet objects
     pageNum = 0
@@ -234,5 +220,5 @@ if __name__ == "__main__":
     # format args into better objs
     timeZone, startDate, endDate = argHandler.formatArguments()
 
-    tweetCollector(timeZone, startDate, endDate, userHandle)
+    tweetCollector(timeZone, startDate, endDate, userHandle,open("codes.txt", "r"))
     print("no crash so far")
