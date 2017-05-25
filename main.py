@@ -159,15 +159,8 @@ class ArgumentHandler:
             tZone = -1
 
         #turn start and end date strings into date obj
-        try:
-            sDate = self.formatDate(self.sDateStr)
-        except IndexError:
-            sDate = -1
-
-        try:
-            eDate = self.formatDate(self.eDateStr)
-        except IndexError:
-            eDate = -1
+        sDate = self.formatDate(self.sDateStr)
+        eDate = self.formatDate(self.eDateStr)
 
         return tZone, sDate, eDate
 
