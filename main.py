@@ -3,7 +3,7 @@ import sys
 import datetime
 import requests
 #from datetime import tzinfo
-import matplotlib.pyplot as plt
+import matplotlib
 matplotlib.use('Agg')
 
 
@@ -46,10 +46,10 @@ def plotTweets(tweets, sDate, eDate):
     for time in times:
         frequency.append(times[time]/days)
     #print(frequency)
-    plt.plot(frequency)
-    plt.ylabel("Average tweets per day")
-    plt.xlabel("Time of day")
-    fig = plt.gcf()
+    matplotlib.pyplot.plot(frequency)
+    matplotlib.pyplot.ylabel("Average tweets per day")
+    matplotlib.pyplot.xlabel("Time of day")
+    fig = matplotlib.pyplot.gcf()
     return fig
     #fig.savefig("plot.png", bbox_inches="tight")
 
