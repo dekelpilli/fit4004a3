@@ -279,6 +279,55 @@ class MainTests(unittest.TestCase):
 
     #tests for collectTweets
     @patch('tweepy.API.user_timeline')
+    def test_collectTweets_validBoundary(self, mock_user_timeline):
+        m = mock_open()
+        api = None
+        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
+            with open('codes.txt', 'r') as h:
+                api = createApi(h)
+
+        mockedTweet1 = tweepy.Status()
+        mockedTweet1.created_at = datetime.datetime(2015, 5, 24, 2, 37, 18)
+        mockedTweet1.id = 1
+        
+        mockedTweet2 = tweepy.Status()
+        mockedTweet2.created_at = datetime.datetime(2014, 5, 24, 2, 37, 18)
+        mockedTweet2.id = 2
+        
+        mockedTweet3 = tweepy.Status()
+        mockedTweet3.created_at = datetime.datetime(2013, 5, 24, 2, 37, 18)
+        mockedTweet3.id = 3
+        
+        mock_user_timeline.return_value = [mockedTweet1, mockedTweet2, mockedTweet3]
+        result = collectTweets(datetime.timedelta(hours=20), datetime.date(2013, 5, 23), datetime.date(2014, 5, 22), "@x", api)
+        
+        self.assertTrue(len(result) == 1)
+
+    @patch('tweepy.API.user_timeline')
+    def test_collectTweets_invalidBoundary(self, mock_user_timeline):
+        m = mock_open()
+        api = None
+        with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
+            with open('codes.txt', 'r') as h:
+                api = createApi(h)
+        mockedTweet1 = tweepy.Status()
+        mockedTweet1.created_at = datetime.datetime(2013, 5, 24, 2, 37, 18)
+        mockedTweet1.id = 1
+        
+        mockedTweet2 = tweepy.Status()
+        mockedTweet2.created_at = datetime.datetime(2013, 5, 24, 2, 37, 18)
+        mockedTweet2.id = 2
+        
+        mockedTweet3 = tweepy.Status()
+        mockedTweet3.created_at = datetime.datetime(2013, 5, 24, 2, 37, 18)
+        mockedTweet3.id = 3
+        
+        mock_user_timeline.return_value = [mockedTweet1, mockedTweet2, mockedTweet3]
+        result = collectTweets(datetime.timedelta(hours=10), datetime.date(2014, 5, 24), datetime.date(2017, 5, 26), "@x", api)
+        
+        self.assertTrue(len(result) == 0)
+
+    @patch('tweepy.API.user_timeline')
     def test_collectTweets_regular(self, mock_user_timeline):
         m = mock_open()
         api = None
@@ -298,7 +347,7 @@ class MainTests(unittest.TestCase):
         mockedTweet3.id = 3
         
         mock_user_timeline.return_value = [mockedTweet1, mockedTweet2, mockedTweet3]#MagicMock(return_value=[mockedTweet])
-        result = collectTweets(datetime.timedelta(hours=10), datetime.date(2014, 5, 24), datetime.date(2017, 5, 26), "@x", api)
+        result = collectTweets(datetime.timedelta(hours=10), datetime.date(2014, 5, 24), datetime.date(2018, 5, 26), "@x", api)
         resultCount = bool(len(result) == 3)
         type1 = isinstance(result[0], Tweet)
         type2 = isinstance(result[1], Tweet)
@@ -306,7 +355,7 @@ class MainTests(unittest.TestCase):
         date1 = bool(datetime.datetime.combine(result[0].date, result[0].time) == mockedTweet1.created_at + datetime.timedelta(hours=10))
         date2 = bool(datetime.datetime.combine(result[1].date, result[1].time) == mockedTweet2.created_at + datetime.timedelta(hours=10))
         date3 = bool(datetime.datetime.combine(result[2].date, result[2].time) == mockedTweet3.created_at + datetime.timedelta(hours=10))
-        #print("XX LOGGING: new = " + str(datetime.datetime.combine(result[0].date, result[0].time)) + ", old = " + str(mockedTweet1.created_at))
+        
         self.assertTrue(resultCount and type1 and type2 and type3 and date1 and date2 and date3)
         
 
