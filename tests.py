@@ -1,6 +1,7 @@
 import unittest
 import datetime
 import tweepy
+import matplotlib
 from main import *
 from unittest.mock import MagicMock
 from unittest.mock import mock_open
@@ -379,6 +380,26 @@ class MainTests(unittest.TestCase):
 
     def test_validateArgumentObjectValues_datesInvalid(self):
         self.assertTrue(self.validateArgumentObjectValues(datetime.timedelta(hours=5, minutes=56), datetime.date(2017, 5, 25), datetime.date(2017, 5, 24)))
+
+    #test for plotTweets     
+    def test_plotTweets_regular(self):
+        tweets = [Tweet("@user", datetime.date(2017, 5, 20), datetime.time(19, 43, 24, 241775)),
+                  Tweet("@user2", datetime.date(2017, 5, 15), datetime.time(19, 43, 24, 241775)),
+                  Tweet("@user3", datetime.date(2017, 4, 15), datetime.time(19, 43, 24, 241775))]
+        plot = plotTweets(tweets, datetime.date(2017, 3, 25), datetime.date(2017, 5, 25))
+        assert isinstance(plot, matplotlib.figure.Figure)
+
+    def test_plotTweets_validBoundary(self):
+        tweets = []
+        plot = plotTweets(tweets, datetime.date(2017, 5, 25), datetime.date(2017, 5, 25))
+        assert isinstance(plot, matplotlib.figure.Figure)
+
+    def test_plotTweets_invalid(self):
+        tweets = [Tweet("@user", None, datetime.time(19, 43, 24, 241775)),
+                  Tweet("@user2", datetime.date(2017, 5, 15), None),
+                  Tweet("@user3", "datetime.date(2017, 4, 15)", datetime.time(19, 43, 24, 241775))]
+        with self.assertRaises(AttributeError):
+            plot = plotTweets(tweets, datetime.date(2017, 5, 25), datetime.date(2017, 3, 25))
 
 if __name__ == "__main__":
     unittest.main()
