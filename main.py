@@ -4,6 +4,7 @@ import datetime
 import requests
 #from datetime import tzinfo
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 
 
 class Tweet:
@@ -39,9 +40,8 @@ def plotTweets(tweets, sDate, eDate):
     for tweet in tweets:
         times[tweet.time.hour] += 1
 
-    #days = (min(eDate, datetime.datetime.now().date()) - sDate).days + 1 #if we don't want to include days beyond today in the average
-    days = (eDate - sDate).days + 1
-    
+    days = (min(eDate, datetime.datetime.now().date()) - sDate).days + 1
+
     frequency = []
     for time in times:
         frequency.append(times[time]/days)
@@ -273,7 +273,5 @@ if __name__ == "__main__":
 ##    for tweet in tweets:
 ##        print(tweet.text)
     plot = plotTweets(tweets, startDate, endDate)
-
-    tweetMessage = "Frequency of tweets by " + userHandle + " between " + startDateBase + " and " + endDateBase + ". Timezone: UTC" + timeZoneBase
     
-    api.update_with_media("plot.png", status=tweetMessage)
+    api.update_with_media("plot.png")
