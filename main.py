@@ -23,6 +23,10 @@ class Tweet:
         self.time = date.time()
         self.date = date.date()
 
+def uploadPlot(api, plotName):
+    plot = open(plotName, "r")
+    api.update_with_media(plotName, file=plot)
+
 #Tweet objects
 def plotTweets(tweets):
     times = {}
@@ -38,16 +42,14 @@ def plotTweets(tweets):
     #print(frequency)
     plt.plot(frequency)
     plt.ylabel("Amount of tweets")
-    plt.show()
-    pass
-
+    fig = plt.gcf()
+    fig.savefig("plot.png", bbox_inches="tight")
 
 def getCode(line):
     return line.split("=")[1].strip()
 
-def createAPI(codeFile):
+def createApi(codeFile):
     #read privacy codes from file
-    #codes = open(filename, "r").readlines()
     codes = codeFile.readlines()
     codeFile.close()
 
@@ -77,8 +79,7 @@ def createAPI(codeFile):
 # tZone is timedelta
 # sDate and eDate are datetime objects
 # uHandle is string, starting with @
-def collectTweets(tZone, sDate, eDate, uHandle, codeFile):
-    api = createAPI(codeFile)
+def collectTweets(tZone, sDate, eDate, uHandle, api):
 
     collectedTweets = [] #stores Tweet objects
     pageNum = 1
@@ -235,8 +236,13 @@ if __name__ == "__main__":
     # format args into better objs
     timeZone, startDate, endDate = argHandler.formatArguments()
 
-    tweets = collectTweets(timeZone, startDate, endDate, userHandle,open("codes.txt", "r"))
+    # generate API
+    api = createApi(open("codes.txt", "r"))
+
+    tweets = collectTweets(timeZone, startDate, endDate, userHandle, api)
     #print(len(tweets))
 ##    for tweet in tweets:
 ##        print(tweet.text)
-    plotTweets(tweets)
+    plot = plotTweets(tweets)
+
+    uploadPlot(api, "plot.png")
