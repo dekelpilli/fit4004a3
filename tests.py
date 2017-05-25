@@ -285,13 +285,29 @@ class MainTests(unittest.TestCase):
         with patch('__main__.open', mock_open(read_data="consumer_key=yhPn4WdJK2punYXi7HgIs6Jaz\nconsumer_secret=Ess5jixcPzere2rz9yai0L55m7M59Zsukd0HiHpfZRyc4yqqiv\naccess_token=867358306662207489-PtyAQrFFxhqsp2asyarLcOqjGAPxQ3x\naccess_secret=EH3qwnLKWtZvOjOKFlZg8QO8HOeXmgHXAmXJdOkmXqPTY"), create=True) as m:
             with open('codes.txt', 'r') as h:
                 api = createApi(h)
-        mockedTweet = tweepy.Status()
-        mockedTweet.created_at = datetime.datetime(2017, 5, 24, 2, 37, 18)
-        mockedTweet.text = "This is a mocked tweet"
-        mockedTweet.id = 1
-        mock_user_timeline.return_value = [mockedTweet]#MagicMock(return_value=[mockedTweet])
-        result = collectTweets(datetime.timedelta(hours=10), datetime.date(2017, 5, 24), datetime.date(2017, 5, 26), "@x", api)
-        print("LOGGING: " + str(result))
+        mockedTweet1 = tweepy.Status()
+        mockedTweet1.created_at = datetime.datetime(2017, 5, 24, 2, 37, 18)
+        mockedTweet1.id = 1
+        
+        mockedTweet2 = tweepy.Status()
+        mockedTweet2.created_at = datetime.datetime(2016, 5, 24, 2, 37, 18)
+        mockedTweet2.id = 2
+        
+        mockedTweet3 = tweepy.Status()
+        mockedTweet3.created_at = datetime.datetime(2015, 5, 24, 2, 37, 18)
+        mockedTweet3.id = 3
+        
+        mock_user_timeline.return_value = [mockedTweet1, mockedTweet2, mockedTweet3]#MagicMock(return_value=[mockedTweet])
+        result = collectTweets(datetime.timedelta(hours=10), datetime.date(2014, 5, 24), datetime.date(2017, 5, 26), "@x", api)
+        resultCount = bool(len(result) == 3)
+        type1 = isinstance(result[0], Tweet)
+        type2 = isinstance(result[1], Tweet)
+        type3 = isinstance(result[2], Tweet)
+        date1 = bool(datetime.datetime.combine(result[0].date, result[0].time) == mockedTweet1.created_at)
+        date2 = bool(datetime.datetime.combine(result[1].date, result[1].time) == mockedTweet2.created_at)
+        date3 = bool(datetime.datetime.combine(result[2].date, result[2].time) == mockedTweet3.created_at)
+        #print("XX LOGGING: " + str(text1))
+        self.assertTrue(resultCount and type1 and type2 and type3 and date1 and date2 and date3)
         
 
                 
