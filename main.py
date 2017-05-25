@@ -93,10 +93,11 @@ def collectTweets(tZone, sDate, eDate, uHandle, api):
     #read tweets from specified user, within specified dates and save as Tweet objects
     while True:
         tweets = api.user_timeline(uHandle, page = pageNum) #tweets contains 20 tweets. Every time pageNum increases, it moves on to the next 20.
+        #print("XX LOGGING: tweets = " + str(tweets))
 
         #if there are no more tweets and sDate hasn't been reached yet
         if len(tweets) == 0:
-            #print(str(len(collectedTweets)) + "tweets makes me angry")
+            #print(str(len(collectedTweets)) + " tweets makes me angry")
             return collectedTweets
         for tweet in tweets:
             if tweet.id in tweetIds:
