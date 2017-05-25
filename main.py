@@ -16,7 +16,7 @@ class Tweet:
         self.time = time
 
     #change is a timedelta object
-    def adjustTime(delta):
+    def adjustTime(self, delta):
         date = datetime.datetime.combine(self.date, self.time)
         date += delta
         self.time = date.time()
@@ -59,39 +59,36 @@ def apiCreator(codeFile):
 
 
 
-## params are as given by user
+# tZone is timedelta
+# sDate and eDate are datetime objects
+# uHandle is string, starting with @
 def tweetCollector(tZone, sDate, eDate, uHandle, codeFile):
     api = apiCreator(codeFile)
 
     collectedTweets = [] #stores Tweet objects
-    pageNum = 0
+    pageNum = 1
 
     #read tweets from specified user, within specified dates and save as Tweet objects
     while True:
         tweets = api.user_timeline(uHandle, page = pageNum) #tweets contains 20 tweets. Every time pageNum increases, it moves on to the next 20.
 
-        #if there are no more tweets and
+        #if there are no more tweets and sDate hasn't been reached yet
         if len(tweets) == 0:
+            print(str(len(collectedTweets)) + "tweets makes me angry")
             return collectedTweets
         for tweet in tweets:
             tweetTime = tweet.created_at
-            tweetObj = Tweet(uHandle, tweet.text, tweetTime.date(), tweetTime.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
+            tweetObj = Tweet(uHandle, tweet.text.encode('UTF-8'), tweetTime.date(), tweetTime.time()) #converts collected tweet into a Tweet object. also possible to get username from tweet using api.get_user(tweet.user.id).screen_name
             tweetObj.adjustTime(tZone)
-            tweetTime = datetime.datetime.combine(tweetObj.date(), tweetObj.time())
+            tweetTime = tweetObj.date
             
             if tweetTime >= sDate and tweetTime <= eDate:
                 collectedTweets.append(tweetObj)
 
-
-
-
             elif tweetTime < sDate:
-                continue
-            elif tweetTime > eDate:
-                #TODO: adjust time of all tweet objects by tZone
-
                 return collectedTweets #return tweets
         pageNum += 1
+        print(pageNum)
 
 
     return collectedTweets
@@ -231,5 +228,6 @@ if __name__ == "__main__":
     # format args into better objs
     timeZone, startDate, endDate = argHandler.formatArguments()
 
-    tweetCollector(timeZone, startDate, endDate, userHandle,open("codes.txt", "r"))
-    print("no crash so far")
+    tweets = tweetCollector(timeZone, startDate, endDate, userHandle,open("codes.txt", "r"))
+    for tweet in tweets:
+        print(tweet.text)
