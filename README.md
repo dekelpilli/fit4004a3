@@ -1,4 +1,5 @@
 # FlowUnderStacks - Assignment 3
+The specs for this assignment are available in `FIT4004Assignment32017.pdf`.
 
 ## Getting started  
 To run this program, you need to have the following programs installed: 
